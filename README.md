@@ -29,10 +29,12 @@ export PATH=~/.protocoll/bin:$PATH;
 
 The previous versions are available for download on [the release pages](https://github.com/gannochenko/protocoll/releases).
 
+The application can be compiled for any other architecture Golang supports.
+
 ## Usage
 
 To generate the collection the following command is used. The output will be written to stdout.
-To have the collection a file, do output redirect:
+To have the collection written to a file instead, do output redirect:
 
 ~~~bash
 protocoll generate --folder <path-to-protobuf-files> --name "My collection" > collection.json
