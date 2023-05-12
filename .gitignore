@@ -1,0 +1,7 @@
+*.json
+*.proto
+out
+
+# IDE
+.idea/workspace.xml
+.idea/libraries

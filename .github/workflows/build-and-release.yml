@@ -1,0 +1,48 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Build
+        run: make build
+      - name: Create changelog
+        id: github_release
+        uses: mikepenz/release-changelog-builder-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          skipIfReleaseExists: true
+          artifacts: "out/*"
+          body: ${{steps.github_release.outputs.changelog}}
+          token: ${{ secrets.RELEASE_TOKEN }}
+      - name: Extract version
+        uses: mad9000/actions-find-and-replace-string@3
+        id: extract_version
+        with:
+          source: ${{ github.ref }}
+          find: "refs/tags/v"
+          replace: ""
+      - name: Print Tag
+        run: |
+         echo ${{ steps.extract_version.outputs.value }}
+      - uses: actions/checkout@v3
+        with:
+          ref: installer
+          token: ${{ secrets.RELEASE_TOKEN }}
+      - run: |
+          sed -e "s/#VERSION#/${{ steps.extract_version.outputs.value }}/g" ./script/install.template.sh > ./script/install.sh
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Next version installer"
+          git push origin installer
