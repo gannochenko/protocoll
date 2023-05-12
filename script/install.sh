@@ -7,7 +7,12 @@ FILE_PATH="/protocoll"
 
 DST="${HOME}${FOLDER_PATH}"
 DST_FILE="${DST}${FILE_PATH}"
-VERSION="v0.0.5"
+VERSION="0.0.2"
+
+error_and_exit() {
+  echo "$1"
+  exit 1
+}
 
 check_command() {
   command -v "$1" > /dev/null 2>&1
@@ -16,8 +21,7 @@ check_command() {
 
 ensure_command() {
   if ! check_command "$1"; then
-    echo "Command not found: '$1'"
-    exit 1
+    error_and_exit "Command not found: '$1'"
   fi
 }
 
@@ -25,15 +29,50 @@ ensure_success() {
   $* > /dev/null
 
   if [[ $? -ne 0 ]]; then
-    echo "Command execution failed: $*"
-    exit 1
+    error_and_exit "Command execution failed: $*"
   fi
+}
+
+get_architecture() {
+  local os="$(uname -s)"
+  local cpu="$(uname -m)"
+
+  case "$os" in
+      Linux)
+          local os="linux"
+          ;;
+      Darwin)
+          local os="darwin"
+          ;;
+      MINGW* | MSYS* | CYGWIN*)
+          local os="windows"
+          ;;
+      *)
+          error_and_exit "OS type is not supported: $os"
+          ;;
+  esac
+
+  case "$cpu" in
+      x86_64)
+          local cpu="amd64"
+          ;;
+      *)
+          error_and_exit "CPU architecture is not supported: $cpu"
+          ;;
+  esac
+
+  RETVAL="${os}-${cpu}"
 }
 
 download_and_run() {
   ensure_success mkdir -p "$DST"
 
-  local url="https://github.com/gannochenko/protocoll/releases/download/v${VERSION}/protocoll-darwin-amd64"
+  get_architecture
+  local architecture=$RETVAL
+
+  echo $architecture
+
+  local url="https://github.com/gannochenko/protocoll/releases/download/v${VERSION}/protocoll-${architecture}"
 
   rm -f "${DST_FILE}"
 
