@@ -63,4 +63,4 @@ protocoll generate --folder <path-to-protobuf-files> --name "My collection" > co
 
 ## License
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT). Explain the license terms and provide a link to the full license file.
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
