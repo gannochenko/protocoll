@@ -32,9 +32,6 @@ jobs:
           source: ${{ github.ref }}
           find: "refs/tags/v"
           replace: ""
-      - name: Print Tag
-        run: |
-         echo ${{ steps.extract_version.outputs.value }}
       - uses: actions/checkout@v3
         with:
           ref: installer
